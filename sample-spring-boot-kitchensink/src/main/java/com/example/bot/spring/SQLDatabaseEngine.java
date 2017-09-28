@@ -12,70 +12,26 @@ import java.net.URI;
 public class SQLDatabaseEngine extends DatabaseEngine {
 	@Override
 	String search(String text) throws Exception {
-		//Write your code here
-		/*
-		 * String result = null;
-		BufferedReader br = null;
-		InputStreamReader isr = null;
-		try {
-			isr = new InputStreamReader(
-                    this.getClass().getResourceAsStream(FILENAME));
-			br = new BufferedReader(isr);
-			String sCurrentLine;
-			
-			while (result == null && (sCurrentLine = br.readLine()) != null) {
-				String[] parts = sCurrentLine.split(":");
-				if (text.toLowerCase().equals(parts[0].toLowerCase())) {
-					result = parts[1];
-				}
-			}
-		} catch (IOException e) {
-			log.info("IOException while reading file: {}", e.toString());
-		} finally {
-			try {
-				if (br != null)
-					br.close();
-				if (isr != null)
-					isr.close();
-			} catch (IOException ex) {
-				log.info("IOException while closing file: {}", ex.toString());
-			}
-		}
-		if (result != null)
-			return result;
-		throw new Exception("NOT FOUND");
-    }
-	
-	private final String FILENAME = "/static/database.txt";
-		 */
-		Connection connection = null;
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
 		String result = null;
-		try {
-			connection = getConnection();
-			stmt = connection.prepareStatement("SELECT keyword, response FROM matching where keyword like concat('%', ?, '%')");
-			stmt.setString(1, text);
-			rs = stmt.executeQuery();
-			while (result == null && rs.next()) {
-				result = rs.getString(2);
-			}
-		}
-		catch (Exception e) {
-			log.info("Exception: {}", e.toString());
-		}
-		finally {
-			try {
-				if (rs != null)
-					rs.close();
-				if (stmt != null)
-					stmt.close();
-				if (connection != null)
-					connection.close();
-			} catch (Exception ex) {
-				log.info("Exception while closing: {}", ex.toString());
-			}
-		}
+		Connection connection = getConnection();
+		PreparedStatement stmt = connection.prepareStatement("SELECT response FROM responsetable where keyword=?");
+		stmt.setString(1, text);
+		ResultSet rs = stmt.executeQuery();
+		
+		
+		while(rs.next())
+		{
+			
+//			if (text.toLowerCase().equals(temporary.toLowerCase())) {}
+				result =  rs.getString(1);
+			
+		} 
+		
+		rs.close();
+		stmt.close(); 
+		connection.close();
+		
+	
 		if (result != null)
 			return result;
 		throw new Exception("NOT FOUND");
