@@ -48,25 +48,37 @@ public class SQLDatabaseEngine extends DatabaseEngine {
 	
 	private final String FILENAME = "/static/database.txt";
 		 */
-		String result = ""; 
+		Connection connection = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		String result = null;
 		try {
-			Connection connection = this.getConnection();
-			
-			PreparedStatement stmt = connection.prepareStatement("SELECT response FROM reply WHERE keyword = ?");
-			stmt.setString(1,text);
-			ResultSet re = stmt.executeQuery();
-			while (rs.next()) {
-				result = rs.getString(1);
-				System.out.println(result);
+			connection = getConnection();
+			stmt = connection.prepareStatement("SELECT keyword, response FROM matching where keyword like concat('%', ?, '%')");
+			stmt.setString(1, text);
+			rs = stmt.executeQuery();
+			while (result == null && rs.next()) {
+				result = rs.getString(2);
 			}
-			rs.close();
-			stmt.close();
-			connection.close();
-			} catch(Exception e) {
-				log.info("Exception while accessing DB: {}", e.toString());
 		}
-		
-		return result;
+		catch (Exception e) {
+			log.info("Exception: {}", e.toString());
+		}
+		finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (stmt != null)
+					stmt.close();
+				if (connection != null)
+					connection.close();
+			} catch (Exception ex) {
+				log.info("Exception while closing: {}", ex.toString());
+			}
+		}
+		if (result != null)
+			return result;
+		throw new Exception("NOT FOUND");
 	}
 	
 	
