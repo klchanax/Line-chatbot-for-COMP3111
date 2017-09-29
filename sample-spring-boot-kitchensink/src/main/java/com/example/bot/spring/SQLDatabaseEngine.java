@@ -19,8 +19,8 @@ public class SQLDatabaseEngine extends DatabaseEngine {
 			PreparedStatement stmt = connection.prepareStatement("SELECT keyword,response FROM krtable where keyword like concat('%', ?, '%')");
 			stmt.setString(1, text);
 			ResultSet rs = stmt.executeQuery();
-			while (rs.next()){
-				result = rs.getString(1);
+			while (result == null && rs.next()) {
+				result = rs.getString(2);
 			}
 			rs.close();
 			stmt.close();
@@ -38,7 +38,7 @@ public class SQLDatabaseEngine extends DatabaseEngine {
 	
 	private Connection getConnection() throws URISyntaxException, SQLException {
 		Connection connection;
-		URI dbUri = new URI(System.getenv("postgres://ouzlaamsuwtnke:b64cba23d99f1ab3cd9554663db8a4c42aca7948415509fa740010a652e2c2ed@ec2-54-235-88-58.compute-1.amazonaws.com:5432/dcb8j147fieht6"));
+		URI dbUri = new URI(System.getenv("DATABASE_URL"));
 
 		String username = dbUri.getUserInfo().split(":")[0];
 		String password = dbUri.getUserInfo().split(":")[1];
