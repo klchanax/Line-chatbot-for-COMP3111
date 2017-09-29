@@ -13,7 +13,40 @@ public class SQLDatabaseEngine extends DatabaseEngine {
 	@Override
 	String search(String text) throws Exception {
 
-		String result = null;
+		/*
+		 * String result = null;
+		BufferedReader br = null;
+		InputStreamReader isr = null;
+		try {
+			isr = new InputStreamReader(
+                    this.getClass().getResourceAsStream(FILENAME));
+			br = new BufferedReader(isr);
+			String sCurrentLine;
+			
+			while (result == null && (sCurrentLine = br.readLine()) != null) {
+				String[] parts = sCurrentLine.split(":");
+				if (text.toLowerCase().equals(parts[0].toLowerCase())) {
+					result = parts[1];
+				}
+			}
+		} catch (IOException e) {
+			log.info("IOException while reading file: {}", e.toString());
+		} finally {
+			try {
+				if (br != null)
+					br.close();
+				if (isr != null)
+					isr.close();
+			} catch (IOException ex) {
+				log.info("IOException while closing file: {}", ex.toString());
+			}
+		}
+		if (result != null)
+			return result;
+		throw new Exception("NOT FOUND");
+    }
+		 */
+			String result = null;
 		try{
 			Connection connection = getConnection();
 			PreparedStatement stmt = connection.prepareStatement("SELECT keyword,response FROM krtable where keyword like concat('%', ?, '%')");
@@ -32,6 +65,7 @@ public class SQLDatabaseEngine extends DatabaseEngine {
 		if (result != null)
 			return result;
 		throw new Exception("NOT FOUND");
+		
 	}
 	
 	
