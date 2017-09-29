@@ -12,30 +12,28 @@ import java.net.URI;
 public class SQLDatabaseEngine extends DatabaseEngine {
 	@Override
 	String search(String text) throws Exception {
+
 		String result = null;
-		Connection connection = getConnection();
-		PreparedStatement stmt = connection.prepareStatement("SELECT response FROM responsetable where keyword=?");
-		stmt.setString(1, text);
-		ResultSet rs = stmt.executeQuery();
-		
-		
-		while(rs.next())
-		{
-			
-//			if (text.toLowerCase().equals(temporary.toLowerCase())) {}
-				result =  rs.getString(1);
-			
-		} 
-		
-		rs.close();
-		stmt.close(); 
-		connection.close();
-		
-	
+		try{
+			Connection connection = getConnection();
+			PreparedStatement stmt = connection.prepareStatement("SELECT response FROM content where keyword like concat('%', ?, '%')");
+			stmt.setString(1, text);
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()){
+				result = rs.getString(1);
+			}
+			rs.close();
+			stmt.close();
+			connection.close();
+
+		} catch( Exception e){
+			System.out.println(e);
+		}
 		if (result != null)
 			return result;
 		throw new Exception("NOT FOUND");
 	}
+	
 	
 	
 	private Connection getConnection() throws URISyntaxException, SQLException {
